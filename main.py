@@ -5,9 +5,13 @@ import time
 defaults = """
 test = \"""  \"""
 
+def main(data):
+    pass
+
+
 with open("data.txt") as f:
     dd = f.read()
-    problem{day}(test)
+    main(test)
 
 """
 
