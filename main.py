@@ -20,10 +20,10 @@ with open("data.txt") as file:
 """
 defaults2 = """
 
-with open("part1.py") as file:
+with open("day{day}/part1.py") as file:
     data = file.read()
 
-with open("part2.py","w") as file:
+with open("day{day}/part2.py","w") as file:
     file.write(data)
 
 """

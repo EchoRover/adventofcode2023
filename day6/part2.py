@@ -36,7 +36,7 @@ def main(data):
 
 
 
-with open("day6/data.txt") as file:
+with open("data.txt") as file:
     input = file.read()
     main(input)
    
