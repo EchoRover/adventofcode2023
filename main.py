@@ -10,11 +10,12 @@ def parser(data):
     pass
 
 def main(data):
-    pass
+    data = parser(data)
+    
 
 
-with open("data.txt") as file:
-    input = file.read()
+with open("day{day}/data.txt") as file:
+    input_data = file.read()
     main(test)
 
 """
