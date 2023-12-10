@@ -50,8 +50,6 @@ test = """...........
 
 connections = {"F":[0,1,1,0],"7":[0,0,1,1],"J":[1,0,0,1],"L":[1,1,0,0],"|":[1,0,1,0],"-":[0,1,0,1],".":[0,0,0,0]}
 connections2 ={"F":[0,"A","B",0],"7":[0,0,"A","B"],"J":["A",0,0,"B"],"L":["A","B",0,0],"|":["A",0,"B",0],"-":[0,"A",0,"B"]}
- 
-
 
 class Maze:
 
@@ -73,7 +71,6 @@ class Maze:
 
     def replaceS(self):
         """ replace start and get start """
-
         for y in range(self.bre):
             if self.maze[y].find("S") != -1:
                 self.startX = self.maze[y].find("S")
@@ -84,21 +81,13 @@ class Maze:
                 newx = self.startX + pos[0]
                 newy = self.startY + pos[1]
                 if newx >= 0 and newy >= 0 and newx < self.len and newy < self.bre:
-                    
-                    # print(self.maze[newy][newx])
                     S_sides.append(connections[self.maze[newy][newx]][pos[2]])
                 else:
                     S_sides.append(0)
-                # print(newx,newy)
-                # print(newx,newy)
-    
-
         for key in connections:
             if connections[key] == S_sides:
-                self.schar = key 
-                
-                break
-        
+                self.schar = key                 
+                break       
         self.maze[self.startY] = self.maze[self.startY].replace("S",self.schar)
         
 
@@ -107,10 +96,9 @@ class Maze:
             for y in self.newmaze:
                 print(y)
             return
-
-
         for y in self.maze:
             print(y)
+
     def display4(self):
         self.updatecleanzero()
         for i in range(self.bre):
@@ -123,32 +111,26 @@ class Maze:
         currentdir = "A"
         x = self.startX
         y = self.startY
-
         movement = ((0,-1,2),(1,0,3),(0,1,0),(-1,0,1))
         step1 = connections2[self.schar].index(currentdir)
         
-
         x += movement[step1][0]
         y += movement[step1][1]
-        # print(x,y,self.startX,self.startY)
 
         while (x != self.startX) or (y != self.startY):
            
             tile = self.maze[y][x]
             self.path.append(((self.maze[y][x],(x,y))))
-            # print(self.maze[y][x])
             entertile = connections2[tile][movement[step1][2]]
             if entertile == "A":
                 exit = "B"
             else:
                 exit = "A"
             step1 = connections2[tile].index(exit)
-            
 
             x += movement[step1][0]
             y += movement[step1][1]
     
-
     def create_clear_maze(self):
         """this shows only path and everything else is ground"""
         self.cleanmaze = ["."*self.len for i in range(self.bre)]
@@ -160,7 +142,6 @@ class Maze:
             self.cleanmaze[tile[1][1]] = new
 
             
-
     def createmaps(self): 
         
         self.zeromaze = []
@@ -206,7 +187,6 @@ class Maze:
     def solve(self):
     
         #horizontal
-
         points = 0
 
         for y in self.cleanmaze:
@@ -214,19 +194,21 @@ class Maze:
             for idx,tile in enumerate(y):
                 if tile == "|":
                     self.switch()
-                elif tile in ("7","F"):
+                #it can either the top tow corners or bottom two
+                # "L","J"/"F","7"
+                # LJ . F
+                #  L--J
+                #
+
+                elif tile in ("F","7"):
                     self.switch()
-
-
-
-                    
+                  
                 elif tile == "." and self.pos == "in":
                     points += 1
                     print("*",end ="")
                     continue
 
-                print(tile,end = "")                   
-                
+                print(tile,end = "")                                   
             print()
         print(points)
 
@@ -237,6 +219,7 @@ class Maze:
             self.pos = "in"
 
     def removeoutsides(self):
+        "failed functions"
         #top #bottom
         for i in range(self.len):
             if self.cleanmaze[0][i] == ".":
@@ -253,6 +236,7 @@ class Maze:
 
 
     def floodfill(self,tile,x,y):
+        "failed functions"
         
         if self.cleanmaze[y][x] != ".":
             return
@@ -265,33 +249,18 @@ class Maze:
             newy = y + i[1]
             if newx >= 0 and newy >= 0 and newx < self.len and newy < self.bre:
                 self.floodfill(tile,newx,newy)
-                
-                
-               
-        
-
         
     def calc(self):
+        "for part one solution"
         print(len(self.path)//2)
-            
-        
-
-
-                    
-        
-        
-
-        # print(self.startX,self.startY)
-
 
 def parser(data):
-    data  =data.split("\n")
+    data = data.split("\n")
     return data
 
 
 def main(data):
     data = parser(data)
-    
     
     maze = Maze(data)
 
