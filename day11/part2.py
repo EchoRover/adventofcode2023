@@ -142,7 +142,7 @@ class Cosmos:
             
         return dx + dy   
 
-with open("day11/data.txt") as file:
+with open("data.txt") as file:
     input_data = file.read()
     main(input_data)
 

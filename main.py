@@ -3,11 +3,11 @@ import time
 
 
 defaults = """
-test = \"""  \"""
+test = \"""\"""
 
 
 def parser(data):
-    pass
+    return data
 
 def main(data):
     data = parser(data)
@@ -61,7 +61,7 @@ def sample():
 
 
 if __name__ == "__main__":
-    setupday()
+    setupday(12)
     
 
 
