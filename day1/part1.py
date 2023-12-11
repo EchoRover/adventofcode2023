@@ -44,6 +44,7 @@ def fixline(line):
     return line.replace("_","")
 
 def problem1(inp):
+    
 
     total = []
     for i in inp.split("\n"):

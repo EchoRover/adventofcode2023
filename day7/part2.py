@@ -140,7 +140,7 @@ def main(data):
     parser_solver(data)
 
 
-with open("day7/data.txt") as file:
+with open("data.txt") as file:
     input = file.read()
     main(input)
 

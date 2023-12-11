@@ -180,7 +180,7 @@ def problem5(data):
     # a.solveall()
 
 
-with open("day5/data.txt") as f:
+with open("data.txt") as f:
     dd = f.read()
     problem5(dd)
 
