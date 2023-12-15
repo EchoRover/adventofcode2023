@@ -50,7 +50,7 @@ test1 = """#.##..##.
 #........####...."""
 
 
-test2  = """#.##..##.
+test2 = """#.##..##.
 ..#.##.#.
 ##......#
 ##......#
@@ -82,8 +82,10 @@ test2  = """#.##..##.
 #..#....#
 #..##...#"""
 
+
 def parser(data):
     return data.split("\n\n")
+
 
 def main(data):
     data = parser(data)
@@ -92,232 +94,125 @@ def main(data):
 
 class Reflection:
 
-    def __init__(self,data):
+    def __init__(self, data):
         self.patterns = data
         self.count = 0
+        self.solve()
 
-
+    def solve(self):
         self.tot = 0
         for i in self.patterns:
-            self.tot += self.allspots(i)
-        print(self.tot)
+            self.tot += self.regulartest(i, func=self.doreflection)
+        print("final ", self.tot)
 
-
-    def analyze(self,pattern):
-        ps = pattern.split("\n")
-        dir = None
-
-        # self.display(pattern)
-
-        #row
-        a = self.dohorizontaltest(ps) 
-
-        
-    
-        dir = "row"
-        if not len(a[0]):
-            #column
-            ps = self.transpose(pattern).split("\n")
-            a = self.dohorizontaltest(ps)
-            dir = "col"
-        
-        # wehave,wasdir = a,dir
-
-        # a = self.dohorizontaltest(ps,True)
-        # dir = "row"
-        # if a == wehave or not a:
-        #     ps = self.transpose(pattern).split("\n")
-        #     a = self.dohorizontaltest(ps,True)
-        #     dir = "col"
-        # if not a:
-        #     a = wehave
-        #     dir = wasdir
-        #     print("p"* 10)
-        
-        # assert a == wehave, "we have a prolem"
-        
-        old = self.analyze1(pattern)
-        a.append(old)
-        # print(a)
-
-        
-        if a[1] == None:
-            a = a[0][0]
-        else:
-            if len(a[0]) > 1:
-                a[0].remove(a[1])
-            a = a[0][0]
-        # print(a)
-      
-            
-
-
-
-
-    
-        return a if dir == "col" else a * 100
-
-    def regulartest(self,pattern):
-        a = self.quick_check_reflection(pattern.split("\n"))        
+    def regulartest(self, pattern: str, func) -> int:
+        a = func(pattern.split("\n"))
         if a:
             return a * 100
         pattern = self.transpose(pattern)
-    
-        a = self.quick_check_reflection(pattern.split("\n"))
+
+        a = func(pattern.split("\n"))
+
+        assert type(a) == int, "regular test gives non int"
 
         return a
 
-    def quick_check_reflection(self,p):
+    def quick_check_reflection(self, p: list):
 
-        options = len(p) 
-        
-        for i in range(1,options):
-            before,after = p[:i],p[i:]
+        options = len(p)
+
+        for i in range(1, options):
+            before, after = p[:i], p[i:]
             before.reverse()
-        
-            minlen = min(len(before),len(after))
-        
+
+            minlen = min(len(before), len(after))
+
             if after[:minlen] == before[:minlen]:
                 return i
-        
+
         return False
-    
-    def doreflection(sefl,p):
+
+    def doreflection(self, p: list) -> int:
         options = len(p)
 
-        for i in range(1,options):
-            before,after = p[:i],p[i:]
+        for i in range(1, options):
+            before, after = p[:i], p[i:]
             before.reverse()
-        
-            minlen = min(len(before),len(after))
+
+            minlen = min(len(before), len(after))
             chance = True
-        
+
+            # going through
+            # not equal and chance
+            # check for chance
+            #    True - > false
+            #     False - > break
+            # no chance
+            # break
+            #
+
+            # full  loop over
+            # chance used return i
+
+            # self.display("\n".join(p),pointer = i)
+
             for j in range(minlen):
-                if before[j] != after[j]:
-                    if not (is_1_similar(before[j],after[j]) and chance):
-                        break
+
+                if (before[j] != after[j]):
+                    if chance == True:
+                        if self.is_1_similar(before[j], after[j]):
+                            chance = False
+                        else:
+                            # print("due to no chance")
+                            break
+
                     else:
-                        chance = False
+
+                        # print("due to not similar")
+
+                        break
+
             else:
-                return True
+                if not chance:
+                    return i
 
-
-        
         return False
-    
 
+    # utility functions
 
+    def transpose(self, p: str) -> str:
 
-    def dohorizontaltest(self,p):
-      
-        p = [lst for lst in p.split("\n")]
-
-        options = len(p)
-        alli = [] 
-      
-        for i in range(1,options):
-            before,after = p[:i],p[i:]
-            before.reverse()
-        
-            minlen = min(len(before),len(after))
-      
-
-
-            chance = False
-
-            for j in range(minlen):
-                
-                if before[j] != after[j]:
-                    if self.is_1_similar(before[j],after[j]) and chance:
-                        chance = False
-                    else:
-                        break
-            else:
-                if not(i in alli):
-                    alli.append(i)        
-        return alli
-    
-    def transpose(self,p):
-        p = [list(lst) for   lst in p.split("\n")]
-        pp = [[(j,i) for j in range(len(p))] for i in range(len(p[0]))]
+        p = [list(lst) for lst in p.split("\n")]
+        pp = [[(j, i) for j in range(len(p))] for i in range(len(p[0]))]
 
         for j in range(len(p)):
             for i in range(len(p[0])):
-            
+
                 pp[i][j] = p[j][i]
 
         return "\n".join(["".join(lst) for lst in pp])
-    
 
-    def is_1_similar(self,line1,line2,error = 0):
+    def is_1_similar(self, line1: str, line2: str, error=0) -> bool:
         # print(line1,line2)
-    
+
         for i in range(len(line1)):
             if line1[i] != line2[i]:
                 error += 1
             if error > 1:
                 return False
-        
+
         return True
 
+    def display(self, patt: str, pointer=None) -> str:
+        if pointer:
+            print(pointer)
 
-    def allspots(self,data):
-        regular = self.regulartest(data)
-
-      
-        files = []
-        for idx,i in enumerate(data):
-            if i == ".":
-                ch = "#"
-            elif i == "#":
-                ch = "."
+        for idx, i in enumerate(patt.split("\n")):
+            i = i.replace("#", " ")
+            if pointer == idx:
+                print(">", i)
             else:
-                ch = "\n"
-            
-            new = data[:idx] + ch + data[idx + 1:]
-
-            newana = self.dohorizontaltest(new)
-                  
-            if newana != []:
-            
-                newana = [i * 100 for i in newana]
-            else:
-                new = self.transpose(new)
-                newana = self.dohorizontaltest(new)
-
-
-
-         
-        
-            if newana != [] and newana not in files:
-        
-                files.extend(newana)
-        files = list(set(files))
-            
-        print(regular,files)
-
-
-        if regular in files and len(files) == 2:
-            files.remove(regular)
-            return files[0]
-        
-        return regular
-
-
-                
-     
-        # print(files)
-        # print(regular)
-
-            
-    
-
-
-
-    
-    def display(self,patt):
-        for i in patt.split("\n"):
-            print(i)
+                print(" ", i)
         print()
 
     def tests(self):
@@ -327,16 +222,15 @@ class Reflection:
         assert "14\n25\n36" == self.transpose(a)
 
 
-
 with open("day13/data.txt") as file:
     input_data = file.read()
-    main(imptest)
+    main(input_data)
 
 
-#17622 low 2nd 
+# 17622 low 2nd
 
-#33711 high 4th
-#35210 weird 5th
-#38894 high 1st 
+# 33711 high 4th
+# 35210 weird 5th
+# 38894 high 1st
 
-#46594 3rd
+# 46594 3rd
