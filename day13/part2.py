@@ -1,15 +1,22 @@
-test = """.##......
-###.####.
-##.##...#
-..###..##
-...##..##
-#..#.##.#
-..#......
-.##..##..
-.##..##.."""
+imptest = """#..#..#..##..#.
+...#..##.##.#..
+###.#.########.
+##.#...##..##..
+#.####...##...#
+.####.#.####.#.
+##.##..######..
+.####..#....#..
+.##.##.##..##.#
+..#.##...##...#
+#.#.#.##.##.##.
+#####.#.#..#.#.
+...##...####...
+#.#..##.#..#.##
+.####.#.####.#.
+.####.#.####.#.
+#.#..##.#..#.##"""
 
-tt = """..
-##"""
+
 test1 = """#.##..##.
 ..#.##.#.
 ##......#
@@ -24,7 +31,8 @@ test1 = """#.##..##.
 #####.##.
 #####.##.
 ..##..###
-#....#..#""""""
+#....#..#"""
+"""
 ##.####.######.##
 .#.#..#.#....#.#.
 ...#..#...##...#.
@@ -87,23 +95,13 @@ class Reflection:
     def __init__(self,data):
         self.patterns = data
         self.count = 0
-        # self.doall()
+
 
         self.tot = 0
         for i in self.patterns:
             self.tot += self.allspots(i)
         print(self.tot)
-        # self.allspots(data[0])
-    
 
-    def doall(self):
-        for a in self.patterns:
-            result = self.analyze(a)
-            print(result)
-            self.count += result
-            
-            
-        print(self.count)
 
     def analyze(self,pattern):
         ps = pattern.split("\n")
@@ -159,25 +157,17 @@ class Reflection:
     
         return a if dir == "col" else a * 100
 
-    def analyze1(self,pattern):
-
-
-        a = self.dohorizontaltest1(pattern.split("\n"))
-        
+    def regulartest(self,pattern):
+        a = self.quick_check_reflection(pattern.split("\n"))        
         if a:
             return a * 100
         pattern = self.transpose(pattern)
     
-        a = self.dohorizontaltest1(pattern.split("\n"))
+        a = self.quick_check_reflection(pattern.split("\n"))
 
-        # self.display(pattern)
-
-    
         return a
 
-
-
-    def dohorizontaltest1(self,p):
+    def quick_check_reflection(self,p):
 
         options = len(p) 
         
@@ -189,29 +179,51 @@ class Reflection:
         
             if after[:minlen] == before[:minlen]:
                 return i
- 
-
         
         return False
-
-
-
-    def dohorizontaltest(self,p,chance = False):
-
+    
+    def doreflection(sefl,p):
         options = len(p)
-        alli = [] 
-        shortest = None
 
-        
         for i in range(1,options):
             before,after = p[:i],p[i:]
             before.reverse()
         
             minlen = min(len(before),len(after))
-            
-            if after[:minlen] == before[:minlen] and shortest == None:
-                shortest = i
             chance = True
+        
+            for j in range(minlen):
+                if before[j] != after[j]:
+                    if not (is_1_similar(before[j],after[j]) and chance):
+                        break
+                    else:
+                        chance = False
+            else:
+                return True
+
+
+        
+        return False
+    
+
+
+
+    def dohorizontaltest(self,p):
+      
+        p = [lst for lst in p.split("\n")]
+
+        options = len(p)
+        alli = [] 
+      
+        for i in range(1,options):
+            before,after = p[:i],p[i:]
+            before.reverse()
+        
+            minlen = min(len(before),len(after))
+      
+
+
+            chance = False
 
             for j in range(minlen):
                 
@@ -221,8 +233,9 @@ class Reflection:
                     else:
                         break
             else:
-                alli.append(i)        
-        return [alli,shortest]
+                if not(i in alli):
+                    alli.append(i)        
+        return alli
     
     def transpose(self,p):
         p = [list(lst) for   lst in p.split("\n")]
@@ -232,7 +245,6 @@ class Reflection:
             for i in range(len(p[0])):
             
                 pp[i][j] = p[j][i]
-      
 
         return "\n".join(["".join(lst) for lst in pp])
     
@@ -248,8 +260,10 @@ class Reflection:
         
         return True
 
+
     def allspots(self,data):
-        regular = self.analyze1(data)
+        regular = self.regulartest(data)
+
       
         files = []
         for idx,i in enumerate(data):
@@ -261,17 +275,34 @@ class Reflection:
                 ch = "\n"
             
             new = data[:idx] + ch + data[idx + 1:]
+
+            newana = self.dohorizontaltest(new)
+                  
+            if newana != []:
             
+                newana = [i * 100 for i in newana]
+            else:
+                new = self.transpose(new)
+                newana = self.dohorizontaltest(new)
+
+
+
          
-            newana = self.analyze1(new)
         
-            if newana != False and newana != regular:
-                files.append(newana)
-        print(files)
+            if newana != [] and newana not in files:
+        
+                files.extend(newana)
+        files = list(set(files))
+            
+        print(regular,files)
 
 
+        if regular in files and len(files) == 2:
+            files.remove(regular)
+            return files[0]
+        
+        return regular
 
-        return files[0] if len(files) > 0 else regular
 
                 
      
@@ -299,7 +330,7 @@ class Reflection:
 
 with open("day13/data.txt") as file:
     input_data = file.read()
-    main(test1)
+    main(imptest)
 
 
 #17622 low 2nd 
