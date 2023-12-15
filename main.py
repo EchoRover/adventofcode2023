@@ -11,6 +11,12 @@ def parser(data):
 
 def main(data):
     data = parser(data)
+    x = x(data)
+
+
+class x:
+    def __init__(self,data):
+        self.data = data
     
 
 
