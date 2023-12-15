@@ -91,7 +91,7 @@ class Hashmap:
     
 
 
-with open("day15/data.txt") as file:
+with open("data.txt") as file:
     input_data = file.read()
     main(input_data)
 
