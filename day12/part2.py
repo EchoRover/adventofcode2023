@@ -36,13 +36,29 @@ class Springs:
 
             
             
-            total += ( self.gen2(line[0],line[1],line[0],0))
-            print(total,c,self.calls)
+            total += self.allarrangments(line[0],line[1])
+            # print(total,c,self.calls)
             # print(self.cache)
             c += 1
           
         print(total)
         print(self.cache)
+    
+    def allarrangments(self,line : str, numbers : list) -> int:
+        num_index = numbers[0]
+        numcount = 0
+        
+        
+        for i in range(len(line)):
+            tile = line[i]
+            if tile == "?":
+                pass
+
+            
+        print(line,numbers)
+        return 0
+
+
     
 
     def display(self,*line):
