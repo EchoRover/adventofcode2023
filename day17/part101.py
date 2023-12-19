@@ -27,20 +27,21 @@ class PathSolver:
         self.findpath(0,0)
     
     def findpath(self,x,y):
-        self.stack = [(x,y,"s",1,[],0),(x,y,"e",1,[],0)]
-        self.all = [(x,y,"s",1,[],0),(x,y,"e",1,[],0)]
+        self.stack = [(x,y,"s",1,set(),0),(x,y,"e",1,set(),0)]
+        self.all = (self.stack.copy())
         while self.stack != []:
             cc = self.lowest_heatloss
             x,y,prevdir,dist,path,heat = self.stack.pop()
-            self.display(path)
-            print(self.lowest_heatloss,heat)
-            a = input()
+            if 0:
+                self.display(path)
+                print(self.lowest_heatloss,heat)
+                a = input()
             
 
             self.move(x,y,prevdir,dist,path,heat)
             if cc != self.lowest_heatloss:
                 print(self.lowest_heatloss)
-            # self.stack.sort(reverse = True,key = self.order)
+            self.stack.sort(reverse = True,key = self.order)
 
         print(self.lowest_heatloss)
     
@@ -50,10 +51,11 @@ class PathSolver:
             return 
         if (x,y) == (self.length - 1,self.breadth - 1):
             self.lowest_heatloss = min(self.lowest_heatloss,heat)
+            print(self.lowest_heatloss)
             return
         if (x,y) in path:
             return
-        path.append((x,y))
+        path.add((x,y))
         paths = {"n":(x,y - 1),"s":(x,y + 1),"e":(x + 1,y),"w":(x - 1,y)}
         rev = {"n":"s","e":"w","w":"e","s":"n"}      
         del paths[(rev[prevdir])]
@@ -68,7 +70,7 @@ class PathSolver:
             if paths[key][0] in range(self.length):
                 if paths[key][1] in range(self.breadth):
                     final.append((key,paths[key]))
-        final = sorted(final,key = self.dist2,reverse = True)
+        # final = sorted(final,key = self.dist2,reverse = True)
 
 
                 
@@ -108,6 +110,7 @@ class PathSolver:
         print()
 
     def order(self,x):
+        return x[-1]
         return abs(x[0] - self.length - 1) + abs(x[1] - self.breadth - 1)
 
 
