@@ -67,7 +67,7 @@ def sample():
 
 
 if __name__ == "__main__":
-    setupday()
+    setupday(25)
     
 
 
