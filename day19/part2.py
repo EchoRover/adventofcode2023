@@ -23,88 +23,118 @@ def parser(data):
     qs = qs.split("\n")
     qall = []
     dd = {}
-    start = None
+
 
     for i in data.split("\n"):
         center = i.find("{")
-        if start == None:
-            start = i[:center]
+     
         
         dd[i[:center]] = i[center + 1: -1].split(",")
-    
 
-
-    
-   
-    for i in qs:
-        qd = {}
-        
-        for term in i[1:-1].split(","):
-            pointer,number = term.split("=")
-            qd[pointer] = int(number)
-        
-        qall.append(qd)
-    
-
-
-    return dd,qall,start
+    return dd
 
 def main(data):
-    data,ques,start = parser(data)
+    data = parser(data)
  
-    x = Workflow(data,ques,start)
+    x = Workflow(data)
 
 
 class Workflow:
-    def __init__(self,data,ques,start):
+    def __init__(self,data,minr = 1,maxr = 4000):
         self.data = data
-        self.ques = ques
-        self.start = start 
-        # print(self.data)
-
+        self.min_r = minr
+        self.max_r = maxr
+       
         self.solveall()
+
+        
     
     def solveall(self):
-        self.tot = 0
-
-        for i in self.ques:
-            self.solveworkflow(i,self.start)
+        qs = {key:(self.min_r,self.max_r) for key in "samx"}
         
-        print(self.tot)
+
+        for key,val in qs.items():
+            qs[key] = self.solveworkflow(key,val)
+            
+        print(qs)
+
+        lengths = [val[1] - val[0] for val in qs.values()]
+        ans = lengths[0] * lengths[1] * lengths[2] * lengths[3]
+        print(ans)
+        
+        
+        
 
     
-    def solveworkflow(self,rules,start):
-        self.mystart = 'in' 
-     
-        self.info = rules
+    def solveworkflow(self,key,val):
+        self.tot = 1
+        
+        self.mystart = 'in'
+        self.myrange = val
+        self.mykey = key
+          
         
         while self.mystart in self.data:
+            # print(self.myrange,self.mystart)
             self.dorule(self.data[self.mystart])
         
-        if self.mystart in "XMAS":
-            self.tot += sum(self.info.values())
+        return self.myrange
+        print(self.myrange)
 
             
     
     def dorule(self,rule):
-       
+     
+    
+           
         for i in rule:
+           
             if ":" not in i:
                 self.mystart = i
                 return
             
             cond,out = i.split(":")
             splitter = ">" if ">" in i else "<"
-            cond = cond.split(splitter)
-            
+            thiskey,number = cond.split(splitter)
+            number = int(number)
+
+            if thiskey != self.mykey:
+                continue
+            st1,en1 = self.myrange
+          
             if splitter == ">":
-                if self.info[cond[0]] > int(cond[1]):
-                    self.mystart = out
-                    return
+               st2,en2 = (number + 1,self.max_r)
             else:
-                if self.info[cond[0]] < int(cond[1]):
-                    self.mystart = out
-                    return
+                st2,en2 = (self.min_r,number - 1)
+            
+          
+            if st2 <= st1 and en1 <= en2:
+                #if my range is inside
+                print("inside")
+                self.mystart = out 
+                return
+            elif st1 > en2 or st2 > en1:
+                # there is no intersection
+                continue
+            else:
+                print(st2,en2)
+                print(rule)
+                match splitter:
+                    case '>':
+                        # [ x to 4000]
+                        print((st2,en1))
+                        self.myrange = (st2,en1)
+                    case '<':
+                        print((st1,en2),"fdf")
+                        # [1 to fdfd]
+                        self.myrange = (st1,en2)
+                    
+                    
+                self.mystart = out 
+               
+           
+            
+
 
 
             
@@ -114,5 +144,5 @@ class Workflow:
 
 with open("day19/data.txt") as file:
     input_data = file.read()
-    main(input_data)
+    main(test)
 

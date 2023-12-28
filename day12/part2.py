@@ -47,7 +47,7 @@ class Springs:
     def allarrangments(self,line : str, numbers : list) -> int:
         num_index = numbers[0]
         numcount = 0
-        
+         
         
         for i in range(len(line)):
             tile = line[i]
