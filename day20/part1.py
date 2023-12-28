@@ -4,102 +4,136 @@ test = r"""broadcaster -> a, b, c
 %b -> c
 %c -> inv
 &inv -> a"""
-
+test2 = r"""broadcaster -> a
+%a -> inv, con
+&inv -> b
+%b -> con
+&con -> output"""
 
 def parser(data):
     data = data.split("\n")
     data = [lst.split(" -> ") for lst in data]
     data = {a[0]:tuple(map(str.strip,a[1].split(","))) for a in data}
 
-    print(data)
+ 
     return data
 
 def main(data):
     data = parser(data)
-    pp = PulseProp(data)
+    pp = Solve(data)
 
 class Module:
-    def __init__(self,name,output):
-        self.name = name
-        self.output = output
-        self.type = None
-        self.most_recent = None
-        self.settype()
+    def __init__(self,name,chids):
+        if name == 'broadcaster':
+            self.name = name
+            self.type = 'broadcaster'
+        elif '%' in name or '&' in name:
+            self.name = name[1:]
+            self.type = name[0]
+        else:
+            print("ero")
+        self.state = 'low'
+        self.allstate = {}
+        self.children = chids
     
-    def settype(self):
-        if 'broadcaster' == self.name:
-            self.type = "broadcaster"
-            return
-        if self.name.startswith("%"):
-            self.type = "flip"
-            self.name = self.name[1:]
-            return
-        if self.name.startswith("&"):
-            self.type = 'add'
-            self.name = self.name[1:]
+    def __repr__(self):
+        return self.name
     
-    def do(self,*args):
-        match self.type:
-            case 'flip':
-                return self.flip(args)
-            case 'add':
-                return self.add(args)
-    
-    def broadcaster(self):
-        return tuple(zip(self.output,(0,) * len(self.output)))
-    
-    def flip(self,pulse):
-        pulse = pulse[0]
-        if self.most_recent:
-            return (self.output,pulse)
-        self.most_recent = 0 if self.most_recent else 1
-        return (self.output,self.most_recent)
+    def get(self,inp,mod = None):
+        if self.type == 'broadcaster':
+            return inp
+        if self.type == '%':
+            if inp == 'high':
+                return None
+            else:
+                self.state = 'low' if self.state == 'high' else 'high'
+
+                return self.state
+        if self.type == '&':
+            self.allstate[mod] = inp
+            if all(val == 'high' for val in self.allstate.values()):
+                return 'low'
+            else:
+                return 'high'
+
+
+
+
+
+
+
         
-        pulse = pulse[0]
-        print(pulse,self.output)
-        pulse = 1 if pulse == 0 else 0
-        return (self.output,pulse)
-    
-    def add(self,pulse):
-        self.most_recent = pulse[0]
-        if self.most_recent:
-            return (self.output,0)
-        return (self.output,1)
 
 
-        ...
-
-
-class PulseProp:
+class Solve:
     def __init__(self,data):
         self.data = data
-        self.createmod()
-    
-
-        self.pushbutton()
-        
-    
-    def pushbutton(self):
-        broad = self.mods['broadcaster']
-        stack = list(broad.broadcaster())
-        
-        while stack:
-            mod,val = stack.pop()
-            a = self.mods[mod].do(val)
-            stack.append(a)
-        
-        
-    
-    def createmod(self):
         self.mods = {}
-        for i in self.data:
-            tmp = Module(i,self.data[i])
-            self.mods[tmp.name] = tmp
+        for mod,chids in self.data.items():
+            if mod == 'broadcaster':
+                self.mods[mod] = Module(mod,chids)
+            elif '%' in mod or '&' in mod:
+                self.mods[mod[1:]] = Module(mod,chids)               
+            else:
+                print(mod)
+            
+        low = high = 0
+
+        for i in range(1):
+            nl,nh = self.pressbutton()
+            low += nl
+            high += nh
+
+       
+        print(low,high)
+        
+        print("ans = ",(low +0) * high)
+
+    
+        
+
+
+    def pressbutton(self):
+        self.highp = self.lowp = 0
+
+        q = [('broadcaster','low')]
+
+        while q:
+            
+            module,pulse = q.pop(0)
+            if module not in self.mods.keys():
+                # print(module)
+                continue
+
+            if pulse == 'low':
+                self.lowp += 1
+            else:
+                self.highp += 1
+            module = self.mods[module]
+            output = module.get(pulse,module.name)
+            # print(output,module,pulse,module.type)
+
+            if output == None:
+                continue
+
+            for child in module.children:
+            
+            
+    
+                q.append((child,output))
+            print(q,module,output)
+            
+            
+        return (self.lowp,self.highp)
+
+        
+
+
 
     
 
 
 with open("day20/data.txt") as file:
     input_data = file.read()
-    main(test)
+    main(test2)
 
