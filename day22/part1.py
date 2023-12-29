@@ -7,33 +7,6 @@ test = """1,0,1~1,2,1
 0,1,6~2,1,6
 1,1,8~1,1,9"""
 
-
-class Brick:
-    def __init__(self,start,end):
-        self.start = start
-        self.end = end
-        self.create_points()
-    
-
-    def create_points(self):
-        self.points = set((self.start,self.end))
-        print(self.start,self.end)
-    
-        for i in range(self.start[0],self.end[0] +0):
-            self.points.add((i,self.start[1],self.start[2]))
-        for i in range(self.start[1],self.end[1] + 0):
-            self.points.add((self.start[0],self.start[i],self.start[2]))
-        for i in range(self.start[2],self.end[2] + 0):
-            self.points.add((self.start[0],self.start[1],self.start[1]))
-    
-    def subtract(self,d):
-        x,y,z = d
-        for i in range(a):
-            f
-
-    
-
-
 def parser(data):
     data = data.split("\n")
     data = [lst.split('~') for lst in data]
@@ -48,18 +21,35 @@ def main(data):
 class Solve:
     def __init__(self,data):
         self.data = data
-        self.points = []
-        self.createpoints()
-        print(self.points)
-        for i in self.points:
-            print(i.points)
+ 
+        self.createallpoints()
     
-    def createpoints(self):
-        for a in self.data:
-           
-            x,y,z  = a[0]
-            x2,y2,z3 = a[1]
-            self.points.append(Brick(a[0],a[1]))
+
+    def createallpoints(self):
+        n = []
+        for st,en in self.data:
+            if st == en:
+                n.append(([(st,None)]))
+            else:
+                for i in range(3):
+                    if st[i] != en[i]:
+                        break
+                print(i)
+    
+                points = [(st[:i] + (x,) + st[i + 1:],i) for x in range(st[i],en[i] + 1)]
+                n.append((points))
+                
+        print(n)
+    
+
+    def fall(self,points):
+        for bb in points:
+            for x,y,z,d in bb:
+                # d: 0:x 1:y 2:z
+
+
+
+
 
         
     

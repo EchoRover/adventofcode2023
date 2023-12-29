@@ -27,60 +27,64 @@ class Steps:
         self.steps = steps
         self.length = len(self.data[0])
         self.breadth = len(self.data)
+
+        assert self.length == self.breadth
+
         self.getorigin()
+        self.solve()
 
-        self.move()
 
-    def move(self):
-        self.seen = set()
+      
+    
+    def solve(self):
+   
+        points,offset = self.get_relation()
+        x,y,z,_ = points
+
+
+        c = x
+        a = (z - 2 * y + c)/2
+        b = y - c - a
+
+        # c = alpha
+        # a = (gamma - 2 * beta + c) / 2
+        # b = beta - c - a
+
+        def f(x):
+            return a * x ** 2 + b * x + c
+
+
+        print("ans = ",round(f(self.steps // (2 * self.length) - offset)))
+
+
+    def move(self, mygoal):
+        orig = self.steps % (2 * self.length)
         final = set()
-        fin = 0
-        queue = deque([(self.x, self.y, 0, 0, 0)])
-        a = 0
-        b = 0
-        while queue:
-            a += 1
-            x, y, drx, dry, dist = queue.popleft()
+        seen = {(self.x, self.y)} 
+        q = deque([(self.x, self.y, orig + 2 * self.length * mygoal)])
 
-            if (x, y, dist) in self.seen:
-                b += 1
 
+        while q:
+            x, y, dist = q.popleft()
+
+            if dist % 2 == 0:
+                final.add((x, y))
+
+            if dist == 0:
                 continue
-            self.seen.add((x, y, dist))
 
-            for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+            for nx, ny in [(x, y + 1), (x, y - 1), (x + 1, y), (x - 1, y)]:
+                if self.data[ny % self.breadth][nx % self.length] == "#" or (nx, ny) in seen:
+                    continue
 
-                nx = x + dx
-                ny = y + dy
+                seen.add((nx, ny))
+                q.append((nx, ny, dist - 1))
 
-                if self.data[ny % self.breadth][nx % self.length] != '#':
+               
+       
 
-                    if dist + 1 == self.steps:
-                        fin += 1
-                        final.add((nx, ny))
+        return len(final)
 
-                    else:
-                        queue.appendleft((nx, ny, dx, dy, dist + 1))
-
-            # self.display(seen)
-
-        print(len(final), fin, fin - len(final))
-        # print(self.seen)
-
-        print(f"seen length = {len(self.seen)} \nloop_called(a) = {a}")
-        print(f"a = {a} \n(in seen and gone back)b = {b} \na + b = {a + b}")
-        print(f"\nAnswer for {self.steps} is", len(final))
-
-    def display(self, data):
-        print(data)
-        tmp = [list(lst.replace('.', ' ').replace('#', '.'))
-               for lst in self.data]
-
-        for x, y in data:
-            tmp[y][x] = '0'
-        for i in tmp:
-            print("".join(i))
-        print()
 
     def getorigin(self):
         for y in range(self.breadth):
@@ -88,8 +92,41 @@ class Steps:
                 if self.data[y][x] == 'S':
                     self.x, self.y = x, y
                     return
+        raise "start x and y not fount"
+    
+    def get_relation(self):
+        points = []
+        results = []
+        x = 0
+
+        while True:   
+          
+            points.append(self.move(x))
+            x += 1
+           
+          
+            if len(points) >= 4:
+                d1 = points[3] - points[2]
+                d2 = points[2] - points[1]
+                d3 = points[1] - points[0]
+                sd1 = abs(d1) - abs(d2)
+                sd2 = abs(d2) - abs(d3)
+            
+                if sd1 == sd2:
+                    return points,x - 4
+                else:
+                    points.pop(0)
+    # f(x) 
+    # f(x + 2x)
+    # f(x + 4x)
+   
 
 
-with open("day21/data.txt") as file:
+
+with open("data.txt") as file:
     input_data = file.read()
-    main(test, 1000)
+    main(input_data,26501365)
+
+
+
+#inspiration :https://www.youtube.com/watch?v=C5wYxR6ZAPM&t=6009s&ab_channel=HyperNeutrino
